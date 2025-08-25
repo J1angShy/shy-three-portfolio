@@ -11,10 +11,7 @@
 <body>
 
 	<div id="info">
-		<a href="https://threejs.org" target="_blank" rel="noopener">three.js</a> webgpu - reflection<br />
-		Based on <a href="https://oosmoxiecode.com/archive/js_webgl/recursive_tree_cubes/" target="_blank"
-			rel="noopener">Recursive Tree Cubes</a>
-		by <a href="https://github.com/oosmoxiecode" target="_blank" rel="noopener">oosmoxiecode</a><br />
+
 		Press <strong>S</strong> to save camera position
 	</div>
 
@@ -41,22 +38,49 @@
 		import Stats from 'three/addons/libs/stats.module.js';
 		import TWEEN from 'three/addons/libs/tween.module.js';
 
+		/*
+		=== TREE CUSTOMIZATION GUIDE ===
+		
+		The tree is now generated using a seeded random system for consistent results.
+		
+		To customize the tree:
+		1. Change TREE_SEED to get different but consistent tree shapes
+		2. Modify TREE_PARAMS to change the tree structure:
+			 - maxSteps: Number of branching levels (higher = more complex)
+			 - lengthMult: How much shorter each branch gets (0.8-0.95)
+			 - branchCount: Number of branches per node (3-8)
+			 - initialLength: Starting branch length
+			 - initialAngle: Starting angle (0=right, PI/2=up, PI=left)
+		
+		Example tree styles:
+		- Bushy tree: { maxSteps: 5, lengthMult: 0.85, branchCount: 8 }
+		- Tall tree: { maxSteps: 6, lengthMult: 0.92, branchCount: 4 }
+		- Wide tree: { maxSteps: 4, lengthMult: 0.88, branchCount: 6, initialAngle: 0 }
+		*/
+
 		let camera, scene, renderer;
 		let postProcessing;
 		let controls;
 		let stats;
 
+		// Mouse interaction variables
+		let mouse = new THREE.Vector2();
+		let isHoveringScene = false;
+		let originalCameraPosition = new THREE.Vector3();
+		let hoverCameraOffset = new THREE.Vector3();
+
 		// below uniforms will be animated via TWEEN.js
 
 		const uniformEffector1 = uniform(- 0.2);
 		const uniformEffector2 = uniform(- 0.2);
+		const uniformEffector3 = uniform(- 0.2);
 
 		init();
 
 		async function init() {
 
 			camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.25, 30);
-			camera.position.set(4.764, 1.8, 6);
+			camera.position.set(0.091, 5.899, 8.437);
 
 			scene = new THREE.Scene();
 			// Create dark atmospheric background
@@ -67,31 +91,53 @@
 			const ambientLight = new THREE.AmbientLight(0x202020, 0.1);
 			scene.add(ambientLight);
 
-			// Add multiple lights around the tree to make it more visible
-			const pinkLight = new THREE.PointLight(0xff69b4, 6, 10);
-			pinkLight.position.set(2, 2, 2);
-			scene.add(pinkLight);
+			// Main tree lighting - focused on the tree area
+			const mainTreeLight = new THREE.SpotLight(0xffffff, 15, 20, Math.PI / 6, 0.1, 3);
+			mainTreeLight.position.set(0, 8, 4);
+			mainTreeLight.target.position.set(0, 2, 0);
+			mainTreeLight.castShadow = true;
+			mainTreeLight.shadow.mapSize.width = 2048;
+			mainTreeLight.shadow.mapSize.height = 2048;
+			mainTreeLight.shadow.camera.near = 0.5;
+			mainTreeLight.shadow.camera.far = 20;
+			scene.add(mainTreeLight);
+			scene.add(mainTreeLight.target);
 
-			const purpleLight = new THREE.PointLight(0x8a2be2, 6, 10);
-			purpleLight.position.set(-2, 3, -2);
-			scene.add(purpleLight);
+			// Secondary tree lighting from different angles
+			const treeLight1 = new THREE.PointLight(0xffe6cc, 12, 8);
+			treeLight1.position.set(3, 3, 2);
+			scene.add(treeLight1);
 
-			const tealLight = new THREE.PointLight(0x40e0d0, 6, 10);
-			tealLight.position.set(0, 4, 0);
-			scene.add(tealLight);
+			const treeLight2 = new THREE.PointLight(0xe6f3ff, 10, 8);
+			treeLight2.position.set(-3, 4, 1);
+			scene.add(treeLight2);
 
-			// Add additional lights for better tree visibility
-			const whiteLight = new THREE.PointLight(0xffffff, 8, 12);
-			whiteLight.position.set(3, 1, 3);
-			scene.add(whiteLight);
+			const treeLight3 = new THREE.PointLight(0xfff0e6, 8, 6);
+			treeLight3.position.set(0, 6, -2);
+			scene.add(treeLight3);
 
-			const yellowLight = new THREE.PointLight(0xffff80, 5, 8);
-			yellowLight.position.set(-3, 2, 3);
-			scene.add(yellowLight);
+			// Accent lights for tree details
+			const accentLight2 = new THREE.PointLight(0x87ceeb, 5, 5);
+			accentLight2.position.set(-2, 2, 2);
+			scene.add(accentLight2);
 
-			const blueLight = new THREE.PointLight(0x80b3ff, 4, 10);
-			blueLight.position.set(0, 5, -3);
-			scene.add(blueLight);
+			// Subtle rim lighting
+			const rimLight = new THREE.DirectionalLight(0x404040, 3);
+			rimLight.position.set(5, 3, 5);
+			scene.add(rimLight);
+
+			// Add atmospheric lighting around the tree
+			const treeAtmosphereLight = new THREE.PointLight(0x4a90e2, 8, 12); // Blue atmospheric light
+			treeAtmosphereLight.position.set(0, 3, 0);
+			scene.add(treeAtmosphereLight);
+
+			// Add ground illumination light
+			const groundLight = new THREE.SpotLight(0x2c5aa0, 6, 15, Math.PI / 3, 0.3, 2);
+			groundLight.position.set(0, 4, 0);
+			groundLight.target.position.set(0, 0, 0);
+			groundLight.castShadow = true;
+			scene.add(groundLight);
+			scene.add(groundLight.target);
 
 			// textures
 
@@ -115,21 +161,37 @@
 			treeMesh.receiveShadow = true;
 			scene.add(treeMesh);
 
-			// floor
+			// floor - Water/Metal reflective surface
 
 			const floorUV = uv().mul(15);
 			const floorNormalOffset = texture(floorNormal, floorUV).xy.mul(2).sub(1).mul(.02);
 
-			const reflection = reflector({ resolution: 0.9 });
+			// Create a high-quality reflection with better resolution
+			const reflection = reflector({ resolution: 1.0 });
 			reflection.target.rotateX(-Math.PI / 2);
 			reflection.uvNode = reflection.uvNode.add(floorNormalOffset);
 			scene.add(reflection.target);
 
-			const floorMaterial = new THREE.MeshPhongNodeMaterial();
-			floorMaterial.colorNode = texture(floorColor, floorUV);
-			floorMaterial.emissiveNode = reflection.mul(0.25);
+			// Create a water/metal material with enhanced reflections and ambient ground lighting
+			const floorMaterial = new THREE.MeshStandardNodeMaterial();
+
+			// Base color - dark blue-gray for water, or metallic gray
+			const baseColor = vec3(0.1, 0.15, 0.2); // Dark blue-gray water color
+			floorMaterial.colorNode = baseColor;
+
+			// Enhanced reflection with higher intensity
+			floorMaterial.emissiveNode = reflection.mul(1.8); // Increased from 0.25 to 0.8
+
+			// Add metallic properties
+			floorMaterial.metalnessNode = float(0.9); // High metalness for water/metal look
+			floorMaterial.roughnessNode = float(0.1); // Low roughness for smooth reflections
+
+			// Subtle normal mapping for water ripples
 			floorMaterial.normalMap = floorNormal;
-			floorMaterial.normalScale.set(0.2, - 0.2);
+			floorMaterial.normalScale.set(0.1, - 0.1); // Reduced for subtler effect
+
+			// Simple reflection only - no ground lighting effects
+			floorMaterial.emissiveNode = reflection.mul(1.8);
 
 			const floor = new THREE.Mesh(new THREE.BoxGeometry(50, .001, 50), floorMaterial);
 			floor.receiveShadow = true;
@@ -158,7 +220,13 @@
 			controls.enableDamping = true;
 			// controls.autoRotate = true;
 			controls.autoRotateSpeed = 1;
-			controls.target.set(0.027, 2.275, -0.369);
+			controls.target.set(0.285, 2.644, -0.456);
+
+			// Disable mouse controls
+			controls.enablePan = false;
+			controls.enableRotate = false;
+			controls.enableZoom = false;
+
 			controls.update();
 
 			// post-processing
@@ -178,19 +246,30 @@
 			// tweens
 
 			new TWEEN.Tween(uniformEffector1)
-				.to({ value: 1.3 }, 8000)
-				.delay(800)
+				.to({ value: 1.1 }, 3000)
+				.delay(220)
 				.repeat(Infinity)
 				.easing(TWEEN.Easing.Sinusoidal.InOut)
 				.start();
 
 			new TWEEN.Tween(uniformEffector2)
-				.to({ value: 1.2 }, 3000)
+				.to({ value: 1.2 }, 4000)
 				.repeat(Infinity)
 				.easing(TWEEN.Easing.Sinusoidal.InOut)
 				.start();
 
-			//
+			new TWEEN.Tween(uniformEffector3)
+				.to({ value: 1.3 }, 5000)
+				.delay(800)
+				.repeat(Infinity)
+				.easing(TWEEN.Easing.Sinusoidal.InOut)
+				.start();
+			// Store original camera position for hover effects
+			originalCameraPosition.copy(camera.position);
+
+			// Mouse interaction events
+			window.addEventListener('mousemove', onMouseMove);
+			window.addEventListener('mouseleave', onMouseLeave);
 
 			window.addEventListener('resize', onWindowResize);
 
@@ -206,6 +285,34 @@
 
 			renderer.setSize(window.innerWidth, window.innerHeight);
 
+		}
+
+		function onMouseMove(event) {
+			// Calculate mouse position in normalized device coordinates (-1 to 1)
+			mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+			// Set hovering state
+			isHoveringScene = true;
+
+			// Calculate camera movement based on mouse position
+			// The further from center, the more the camera moves
+			const sensitivity = 0.5; // Adjust this value to control movement sensitivity
+
+			// X-axis movement (left/right)
+			hoverCameraOffset.x = mouse.x * sensitivity;
+
+			// Y-axis movement (up/down) - reduced sensitivity for more subtle vertical movement
+			hoverCameraOffset.y = mouse.y * sensitivity * 0.5;
+
+			// Z-axis movement (forward/backward) - subtle depth movement
+			hoverCameraOffset.z = Math.abs(mouse.x) * sensitivity * 0.5;
+		}
+
+		function onMouseLeave() {
+			// Reset hover state when mouse leaves the window
+			isHoveringScene = false;
+			hoverCameraOffset.set(0, 0, 0);
 		}
 
 		function onKeyDown(event) {
@@ -274,6 +381,12 @@ controls.update();`;
 
 			stats.update();
 
+			// Apply hover camera movement
+			if (isHoveringScene || hoverCameraOffset.length() > 0.001) {
+				camera.position.copy(originalCameraPosition).add(hoverCameraOffset);
+				camera.lookAt(controls.target);
+			}
+
 			controls.update();
 
 			TWEEN.update();
@@ -288,10 +401,35 @@ controls.update();`;
 
 		}
 
+		// Seeded random number generator for consistent tree generation
+		function seededRandom(seed) {
+			// Simple seeded random function
+			const x = Math.sin(seed) * 10000;
+			return (x - Math.floor(x)) * 2.0 - 1.0;
+		}
+
+		// Global seed for tree generation - change this value to get different but consistent trees
+		const TREE_SEED = 45; // You can change this number to get different consistent trees
+
+		// Tree customization parameters - modify these for different tree styles
+		const TREE_PARAMS = {
+			maxSteps: 4,        // Number of branching levels (higher = more complex)
+			lengthMult: 0.85,   // How much shorter each branch gets (0.8-0.95) - reduced for more compact tree
+			branchCount: 6,     // Number of branches per node (3-8) - increased for more balanced spread
+			initialLength: 27,  // Starting branch length - reduced to prevent over-extension
+			initialAngle: Math.PI * 0.5  // Starting angle (0 = right, PI/2 = up, PI = left)
+		};
+
+		let seedCounter = 0;
+
+		function getNextSeed() {
+			return TREE_SEED + seedCounter++;
+		}
+
 		function createTreeMesh() {
 
-			const maxSteps = 4;
-			const lengthMult = 0.9;
+			const maxSteps = TREE_PARAMS.maxSteps;
+			const lengthMult = TREE_PARAMS.lengthMult;
 
 			const positions = [];
 			const normals = [];
@@ -307,15 +445,16 @@ controls.update();`;
 
 			function createTreePart(angle, x, y, z, length, count) {
 
-				if (Math.random() > (maxSteps / count) * 0.25) return;
+				const branchSeed = getNextSeed();
+				if (seededRandom(branchSeed) > (maxSteps / count) * 0.25) return;
 
 				if (count < maxSteps) {
 
 					const newLength = length * lengthMult;
 					const newX = x + Math.cos(angle) * length;
 					const newY = y + Math.sin(angle) * length;
-					const countSq = Math.min(3.2, count * count);
-					const newZ = z + (Math.random() * countSq - countSq / 2) * length;
+					const countSq = Math.min(2.0, count * count); // Reduced from 3.2 to 2.0 for less Z spread
+					const newZ = z + (seededRandom(getNextSeed()) * countSq - countSq / 4) * length * 0.5; // Added 0.5 multiplier to reduce Z elongation
 
 					let size = 30 - (count * 8);
 					if (size > 25) size = 25;
@@ -339,13 +478,14 @@ controls.update();`;
 						newPosition.set(x, y, z).lerp(new THREE.Vector3(newX, newY, newZ), percent);
 						position.copy(newPosition);
 
-						position.x += random() * size * 3;
-						position.y += random() * size * 3;
-						position.z += random() * size * 3;
+						const posSeed = getNextSeed();
+						position.x += seededRandom(posSeed) * size * 3; // Reduced from 3 to 2
+						position.y += seededRandom(posSeed + 1) * size * 2; // Reduced from 3 to 2
+						position.z += seededRandom(posSeed + 2) * size * 2; // Reduced from 3 to 1.5 for less Z spread
 
 						positions.push(position.x, position.y, position.z);
 
-						const scale = Math.random() + 5;
+						const scale = seededRandom(getNextSeed()) + 5;
 
 						// normal
 
@@ -354,40 +494,39 @@ controls.update();`;
 
 						// color
 
-						color.setHSL((count / maxSteps) * 0.5 + Math.random() * 0.05, 0.75, 0.6 + Math.random() * 0.1);
+						const colorSeed = getNextSeed();
+						color.setHSL((count / maxSteps) * 0.5 + seededRandom(colorSeed) * 0.05, 0.75, 0.6 + seededRandom(colorSeed + 1) * 0.1);
 						colors.push(color.r, color.g, color.b);
 
 						// to save vertex buffers, we store the size, time and seed in a single attribute
 
 						const instanceSize = size * scale;
 						const instanceTime = (count / maxSteps) + percent * extra;
-						const instanceSeed = Math.random();
+						const instanceSeed = seededRandom(getNextSeed());
 
 						data.push(instanceSize, instanceTime, instanceSeed);
 
 					}
 
-					createTreePart(angle + random(), newX, newY, newZ, newLength + random(), count + 1);
-					createTreePart(angle + random(), newX, newY, newZ, newLength + random(), count + 1);
-					createTreePart(angle + random(), newX, newY, newZ, newLength + random(), count + 1);
-					createTreePart(angle + random(), newX, newY, newZ, newLength + random(), count + 1);
-					createTreePart(angle + random(), newX, newY, newZ, newLength + random(), count + 1);
-					createTreePart(angle + random(), newX, newY, newZ, newLength + random(), count + 1);
+					// Create branches with seeded random variations
+					for (let i = 0; i < TREE_PARAMS.branchCount; i++) {
+						createTreePart(angle + seededRandom(getNextSeed()), newX, newY, newZ, newLength + seededRandom(getNextSeed()), count + 1);
+					}
 
 				}
 
 			}
 
-			const angle = Math.PI * 0.5;
+			const angle = TREE_PARAMS.initialAngle;
 
 			// the tree is represented as a collection of instances boxes generated with below recursive function
 
-			createTreePart(angle, 0, 0, 0, 21, 0);
+			createTreePart(angle, 0, 0, 0, TREE_PARAMS.initialLength, 0);
 
 			const geometry = new THREE.BoxGeometry();
 			const material = new THREE.MeshStandardNodeMaterial();
 			const mesh = new THREE.Mesh(geometry, material);
-			mesh.scale.setScalar(0.05);
+			mesh.scale.setScalar(0.06);
 			mesh.count = instanceCount;
 			mesh.frustumCulled = false;
 
@@ -455,7 +594,41 @@ controls.update();`;
 				const dif2 = abs(instanceTime.sub(uniformEffector2)).toConst();
 				const effect2 = dif2.lessThanEqual(0.15).select(sub(0.15, dif2).mul(sub(1.7, instanceTime).mul(10)), effect1);
 
-				return pow2(vec3(effect1, 0, effect2)).mul(instanceColor);
+				// Create smooth color cycling with interpolation
+				const cycleTime = time.mul(0.3); // Slower speed for smoother transitions
+				const cyclePhase = cycleTime.mod(3); // 3 phases: 0-1, 1-2, 2-3
+
+				// Define 3 color schemes
+				const color1 = vec3(effect1, effect2, 0); // Red + Green = Yellow
+				const color2 = vec3(0, effect1, effect2); // Green + Blue = Cyan  
+				const color3 = vec3(effect1, 0, effect2); // Red + Blue = Purple
+
+				// Smooth interpolation between colors
+				let finalColor;
+
+				if (cyclePhase.lessThan(1)) {
+					// Interpolate between color1 and color2 (phase 0-1)
+					const t = cyclePhase;
+					finalColor = color1.mul(float(1).sub(t)).add(color2.mul(t));
+				} else if (cyclePhase.lessThan(2)) {
+					// Interpolate between color2 and color3 (phase 1-2)
+					const t = cyclePhase.sub(1);
+					finalColor = color2.mul(float(1).sub(t)).add(color3.mul(t));
+				} else {
+					// Interpolate between color3 and color1 (phase 2-3)
+					const t = cyclePhase.sub(2);
+					finalColor = color3.mul(float(1).sub(t)).add(color1.mul(t));
+				}
+
+				// Add outer glow effect around the tree
+				// Create a soft glow that extends beyond the tree particles
+				const glowIntensity = sin(time.mul(1.5)).mul(0.2).add(0.8); // Gentle pulsing glow
+				const outerGlow = finalColor.mul(glowIntensity).mul(0.6); // Softer outer glow
+
+				// Combine the main tree color with the outer glow
+				const combinedGlow = finalColor.add(outerGlow);
+
+				return pow2(combinedGlow).mul(instanceColor);
 			})();
 
 			return mesh;
