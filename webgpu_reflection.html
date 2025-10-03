@@ -243,24 +243,26 @@
 			postProcessing = new THREE.PostProcessing(renderer);
 			postProcessing.outputNode = blendOverlay(scenePassColorBlurred, vignette);
 
-			// tweens
+			// tweens - alternating waves with 1-second fixed intervals
+			// Pattern: Wave1 (0-2s) -> 1s gap -> Wave2 (3-5s) -> 1s gap -> Wave3 (6-8s) -> 1s gap -> repeat
 
 			new TWEEN.Tween(uniformEffector1)
 				.to({ value: 1.1 }, 3000)
-				.delay(220)
+				.delay(0)
 				.repeat(Infinity)
 				.easing(TWEEN.Easing.Sinusoidal.InOut)
 				.start();
 
 			new TWEEN.Tween(uniformEffector2)
-				.to({ value: 1.2 }, 4000)
+				.to({ value: 1.2 }, 3000)
+				.delay(3000) // 2000ms duration + 1000ms gap
 				.repeat(Infinity)
 				.easing(TWEEN.Easing.Sinusoidal.InOut)
 				.start();
 
 			new TWEEN.Tween(uniformEffector3)
-				.to({ value: 1.3 }, 5000)
-				.delay(800)
+				.to({ value: 1.3 }, 2000)
+				.delay(6000) // 2000ms duration + 1000ms gap + 2000ms duration + 1000ms gap
 				.repeat(Infinity)
 				.easing(TWEEN.Easing.Sinusoidal.InOut)
 				.start();
@@ -558,14 +560,23 @@ controls.update();`;
 				const dif2 = abs(instanceTime.sub(uniformEffector2)).toConst();
 				effect = dif2.lessThanEqual(0.15).select(sub(0.15, dif2).mul(sub(1.7, instanceTime).mul(10)), effect);
 
+				// Add smooth transition layer to prevent position reset
+				// Create a gradual fade-out for smoother transitions
+				const transitionFactor = float(1.0).sub(dif1.div(0.25)).clamp(0, 1).add(
+					float(1.0).sub(dif2.div(0.25)).clamp(0, 1)
+				).div(2).clamp(0, 1);
+				
+				// Apply smooth transition to the effect
+				const smoothEffect = effect.mul(transitionFactor);
+
 				// accumulate different vertex animations
 
 				let animated = positionLocal.add(instancePosition).toVar();
 				const direction = positionGeometry.normalize().toConst();
 
-				animated = animated.add(direction.mul(effect.add(instanceSize)));
-				animated = animated.sub(direction.mul(effect));
-				animated = animated.add(instanceNormal.mul(effect.mul(1)));
+				animated = animated.add(direction.mul(smoothEffect.add(instanceSize)));
+				animated = animated.sub(direction.mul(smoothEffect));
+				animated = animated.add(instanceNormal.mul(smoothEffect.mul(1.5)));
 				animated = animated.add(instanceNormal.mul(abs(sin(time.add(instanceSeed.mul(2))).mul(1.5))));
 
 				return animated;
@@ -587,21 +598,26 @@ controls.update();`;
 			material.emissiveNode = Fn(() => {
 				const instanceTime = instanceData.y;
 
-				// Original emissive effect
+				// Improved emissive effect with proper vanishing
 				const dif1 = abs(instanceTime.sub(uniformEffector1)).toConst();
 				const effect1 = dif1.lessThanEqual(0.15).select(sub(0.15, dif1).mul(sub(1.7, instanceTime).mul(10)), float(0));
 
 				const dif2 = abs(instanceTime.sub(uniformEffector2)).toConst();
 				const effect2 = dif2.lessThanEqual(0.15).select(sub(0.15, dif2).mul(sub(1.7, instanceTime).mul(10)), effect1);
 
+				// Ensure complete vanishing at the top by adding height-based fade
+				const topFadeFactor = float(1.0).sub(instanceTime.mul(0.7)).clamp(0, 1);
+				const finalEffect1 = effect1.mul(topFadeFactor);
+				const finalEffect2 = effect2.mul(topFadeFactor);
+
 				// Create smooth color cycling with interpolation
 				const cycleTime = time.mul(0.3); // Slower speed for smoother transitions
 				const cyclePhase = cycleTime.mod(3); // 3 phases: 0-1, 1-2, 2-3
 
-				// Define 3 color schemes
-				const color1 = vec3(effect1, effect2, 0); // Red + Green = Yellow
-				const color2 = vec3(0, effect1, effect2); // Green + Blue = Cyan  
-				const color3 = vec3(effect1, 0, effect2); // Red + Blue = Purple
+				// Define 3 color schemes using final effects for proper vanishing
+				const color1 = vec3(finalEffect1, finalEffect2, 0); // Red + Green = Yellow
+				const color2 = vec3(0, finalEffect1, finalEffect2); // Green + Blue = Cyan  
+				const color3 = vec3(finalEffect1, 0, finalEffect2); // Red + Blue = Purple
 
 				// Smooth interpolation between colors
 				let finalColor;
