@@ -10,9 +10,16 @@
 
 <body>
 
-	<div id="info">
+	<div id="logo">
+		<h1>Shy.</h1>
+	</div>
 
+	<div id="info">
 		Press <strong>S</strong> to save camera position
+	</div>
+
+	<div id="moveRightBtn">
+		<button>Move Right</button>
 	</div>
 
 	<script type="importmap">
@@ -35,7 +42,6 @@
 
 		import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-		import Stats from 'three/addons/libs/stats.module.js';
 		import TWEEN from 'three/addons/libs/tween.module.js';
 
 		/*
@@ -61,13 +67,13 @@
 		let camera, scene, renderer;
 		let postProcessing;
 		let controls;
-		let stats;
 
 		// Mouse interaction variables
 		let mouse = new THREE.Vector2();
 		let isHoveringScene = false;
 		let originalCameraPosition = new THREE.Vector3();
 		let hoverCameraOffset = new THREE.Vector3();
+		let isAnimating = false; // Flag to prevent hover effects during animation
 
 		// below uniforms will be animated via TWEEN.js
 
@@ -208,8 +214,6 @@
 			renderer.toneMapping = THREE.ACESFilmicToneMapping;
 			document.body.appendChild(renderer.domElement);
 
-			stats = new Stats();
-			document.body.appendChild(stats.dom);
 
 			// controls
 
@@ -278,6 +282,10 @@
 			// Add keyboard listener for saving camera position
 			window.addEventListener('keydown', onKeyDown);
 
+			// Add move right button listener for camera animation
+			const moveRightBtn = document.getElementById('moveRightBtn');
+			moveRightBtn.addEventListener('click', onMoveRightClick);
+
 		}
 
 		function onWindowResize() {
@@ -322,6 +330,39 @@
 			if (event.key.toLowerCase() === 's') {
 				saveCameraParameters();
 			}
+		}
+
+		function onMoveRightClick() {
+			// Move camera to the right of the tree and keep it still
+			animateCameraToTree();
+		}
+
+		function animateCameraToTree() {
+			// Set animation flag to prevent hover effects
+			isAnimating = true;
+			
+			// Store original position and clear any existing hover offset
+			const startPosition = camera.position.clone();
+			hoverCameraOffset.set(0, 0, 0); // Clear any existing hover offset
+
+			// Single destination point - to the right of the tree
+			const destinationPosition = new THREE.Vector3(3, 4, 2); // Right side of tree
+
+			// Animate camera position to the right of the tree
+			new TWEEN.Tween(camera.position)
+				.to({ 
+					x: destinationPosition.x, 
+					y: destinationPosition.y, 
+					z: destinationPosition.z 
+				}, 2000) // 2 second smooth transition
+				.easing(TWEEN.Easing.Quadratic.InOut)
+				.onComplete(() => {
+					// Animation complete - update original position and clear hover offset
+					originalCameraPosition.copy(camera.position);
+					hoverCameraOffset.set(0, 0, 0); // Clear hover offset to prevent hard transition
+					isAnimating = false; // Re-enable hover effects after animation
+				})
+				.start();
 		}
 
 		function saveCameraParameters() {
@@ -381,10 +422,8 @@ controls.update();`;
 
 		function animate() {
 
-			stats.update();
-
-			// Apply hover camera movement
-			if (isHoveringScene || hoverCameraOffset.length() > 0.001) {
+			// Apply hover camera movement only when not animating
+			if (!isAnimating && (isHoveringScene || hoverCameraOffset.length() > 0.001)) {
 				camera.position.copy(originalCameraPosition).add(hoverCameraOffset);
 				camera.lookAt(controls.target);
 			}

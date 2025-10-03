@@ -22,6 +22,39 @@ button {
 	text-transform: uppercase;
 }
 
+#logo {
+	position: absolute;
+	top: 20px;
+	left: 20px;
+	z-index: 10;
+	pointer-events: auto;
+	cursor: pointer;
+}
+
+#logo h1 {
+	color: #ffffff;
+	font-family: 'Brush Script MT', 'Lucida Handwriting', 'Monotype Corsiva', cursive;
+	font-size: 2.5rem;
+	font-weight: 300;
+	margin: 0;
+	padding: 0;
+	text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+	letter-spacing: 2px;
+	opacity: 0.9;
+	transition: opacity 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
+}
+
+#logo h1:hover {
+	opacity: 1;
+	text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+	transform: scale(1.05);
+}
+
+#logo h1:active {
+	transform: scale(0.95);
+	text-shadow: 0 0 40px rgba(255, 255, 255, 0.8);
+}
+
 #info {
 	position: absolute;
 	top: 0px;
@@ -88,4 +121,37 @@ a, button, input, select {
 	background-color: #f00;
 	margin-top: 20px;
 	padding: 10px;
+}
+
+#moveRightBtn {
+	position: absolute;
+	top: 50%;
+	right: 20px;
+	transform: translateY(-50%);
+	z-index: 10;
+	pointer-events: auto;
+}
+
+#moveRightBtn button {
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.3);
+	border-radius: 8px;
+	color: #ffffff;
+	padding: 12px 20px;
+	font-family: Monospace;
+	font-size: 14px;
+	cursor: pointer;
+	transition: all 0.3s ease;
+	backdrop-filter: blur(10px);
+}
+
+#moveRightBtn button:hover {
+	background: rgba(255, 255, 255, 0.2);
+	border-color: rgba(255, 255, 255, 0.5);
+	transform: scale(1.05);
+}
+
+#moveRightBtn button:active {
+	transform: scale(0.95);
+	background: rgba(255, 255, 255, 0.3);
 }
