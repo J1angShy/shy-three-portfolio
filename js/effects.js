@@ -222,22 +222,103 @@ export class Effects {
       message: formData.get("message"),
     };
 
-    // Show success message
+    // Show loading state
     const submitBtn = form.querySelector(".submit-btn");
     const originalText = submitBtn.textContent;
-    submitBtn.textContent = "Message Sent!";
-    submitBtn.style.background = "rgba(0, 255, 0, 0.2)";
-    submitBtn.style.borderColor = "rgba(0, 255, 0, 0.5)";
+    submitBtn.textContent = "Sending...";
+    submitBtn.style.background = "rgba(255, 165, 0, 0.2)";
+    submitBtn.style.borderColor = "rgba(255, 165, 0, 0.5)";
+    submitBtn.disabled = true;
 
-    // Reset form after 2 seconds
-    setTimeout(() => {
-      form.reset();
-      submitBtn.textContent = originalText;
-      submitBtn.style.background = "rgba(255, 255, 255, 0.1)";
-      submitBtn.style.borderColor = "rgba(255, 255, 255, 0.3)";
-    }, 2000);
+    // Send email using EmailJS
+    this.sendEmailWithEmailJS(data)
+      .then(() => {
+        // Success
+        submitBtn.textContent = "Message Sent!";
+        submitBtn.style.background = "rgba(0, 255, 0, 0.2)";
+        submitBtn.style.borderColor = "rgba(0, 255, 0, 0.5)";
+
+        // Reset form after 2 seconds
+        setTimeout(() => {
+          form.reset();
+          submitBtn.textContent = originalText;
+          submitBtn.style.background = "rgba(255, 255, 255, 0.1)";
+          submitBtn.style.borderColor = "rgba(255, 255, 255, 0.3)";
+          submitBtn.disabled = false;
+        }, 2000);
+      })
+      .catch((error) => {
+        // Error
+        console.error("Email sending failed:", error);
+        submitBtn.textContent = "Failed to Send";
+        submitBtn.style.background = "rgba(255, 0, 0, 0.2)";
+        submitBtn.style.borderColor = "rgba(255, 0, 0, 0.5)";
+
+        // Reset after 3 seconds
+        setTimeout(() => {
+          submitBtn.textContent = originalText;
+          submitBtn.style.background = "rgba(255, 255, 255, 0.1)";
+          submitBtn.style.borderColor = "rgba(255, 255, 255, 0.3)";
+          submitBtn.disabled = false;
+        }, 3000);
+      });
 
     console.log("Contact form submitted:", data);
+  }
+
+  async sendEmailWithEmailJS(data) {
+    // EmailJS configuration
+    const serviceID = "service_jcrf0oc"; // You'll need to create this in EmailJS
+    const templateID = "template_sjphp2i"; // You'll need to create this in EmailJS
+    const publicKey = "4QHnIABUS32tUrVBb"; // You'll need to get this from EmailJS
+
+    // EmailJS template parameters
+    const templateParams = {
+      from_name: data.name,
+      from_email: data.email,
+      message: data.message,
+      to_email: "jiangshy2001@outlook.com",
+    };
+
+    // Send email using EmailJS
+    try {
+      // Load EmailJS SDK if not already loaded
+      if (typeof emailjs === "undefined") {
+        await this.loadEmailJSSDK();
+      }
+
+      const response = await emailjs.send(
+        serviceID,
+        templateID,
+        templateParams,
+        publicKey
+      );
+      console.log("Email sent successfully:", response);
+      return response;
+    } catch (error) {
+      console.error("EmailJS error:", error);
+      throw error;
+    }
+  }
+
+  loadEmailJSSDK() {
+    return new Promise((resolve, reject) => {
+      if (typeof emailjs !== "undefined") {
+        resolve();
+        return;
+      }
+
+      const script = document.createElement("script");
+      script.src =
+        "https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js";
+      script.onload = () => {
+        // Initialize EmailJS with your public key
+        emailjs.init("4QHnIABUS32tUrVBb");
+        resolve();
+      };
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
   }
 
   animateCubes(cubes) {
