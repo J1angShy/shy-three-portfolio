@@ -1,41 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <title>Shy</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link type="text/css" rel="stylesheet" href="main.css" />
+  </head>
 
-<head>
-	<title>Shy</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	<link rel="icon" type="image/x-icon" href="assets/favicon.ico">
-	<link type="text/css" rel="stylesheet" href="main.css">
-</head>
+  <body>
+    <div id="logo">
+      <h1>Shy.</h1>
+    </div>
 
-<body>
+    <div id="info">Press <strong>S</strong> to save camera position</div>
 
-	<div id="logo">
-		<h1>Shy.</h1>
-	</div>
+    <div id="moveRightBtn">
+      <button>Move Right</button>
+    </div>
 
-	<div id="info">
-		Press <strong>S</strong> to save camera position
-	</div>
+    <div id="loseFocusBtn">
+      <button>Lose Focus</button>
+    </div>
 
-	<div id="moveRightBtn">
-		<button>Move Right</button>
-	</div>
+    <script src="app.js" type="module"></script>
 
-	<script src="app.js" type="module"></script>
-
-	<script type="importmap">
-			{
-				"imports": {
-					"three": "../build/three.webgpu.js",
-					"three/webgpu": "../build/three.webgpu.js",
-					"three/tsl": "../build/three.tsl.js",
-					"three/addons/": "./jsm/"
-				}
-			}
-		</script>
-
-</body>
-
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../build/three.webgpu.js",
+          "three/webgpu": "../build/three.webgpu.js",
+          "three/tsl": "../build/three.tsl.js",
+          "three/addons/": "./jsm/"
+        }
+      }
+    </script>
+  </body>
 </html>

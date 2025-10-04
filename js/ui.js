@@ -14,6 +14,12 @@ export class UI {
     if (moveRightBtn) {
       moveRightBtn.addEventListener("click", () => this.onMoveRightClick());
     }
+
+    // Lose Focus button
+    const loseFocusBtn = document.getElementById("loseFocusBtn");
+    if (loseFocusBtn) {
+      loseFocusBtn.addEventListener("click", () => this.onLoseFocusClick());
+    }
   }
 
   onKeyDown(event) {
@@ -24,5 +30,9 @@ export class UI {
 
   onMoveRightClick() {
     this.effects.extractCubesAndMoveCamera();
+  }
+
+  onLoseFocusClick() {
+    this.cameraController.loseFocus();
   }
 }

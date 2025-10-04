@@ -10,39 +10,8 @@ export class Effects {
   }
 
   extractCubesAndMoveCamera() {
-    const treeMesh = this.scene.children.find(
-      (child) => child.isMesh && child.geometry.type === "BoxGeometry"
-    );
-    if (!treeMesh) return;
-
-    const extractedCubes = [];
-    const cubeCount = 50;
-
-    for (let i = 0; i < cubeCount; i++) {
-      const cubeGeometry = new THREE.BoxGeometry(1.3, 1.3, 1.3);
-      const cubeMaterial = new THREE.MeshStandardMaterial({
-        color: new THREE.Color().setHSL(Math.random() * 0.3 + 0.1, 0.8, 0.7),
-        emissive: new THREE.Color().setHSL(Math.random() * 0.3 + 0.1, 0.6, 0.3),
-      });
-      const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-
-      cube.position.set(
-        (Math.random() - 0.5) * 3,
-        Math.random() * 4 + 1,
-        (Math.random() - 0.5) * 3
-      );
-      cube.scale.setScalar(0.1);
-      cube.castShadow = true;
-      cube.receiveShadow = true;
-
-      this.scene.add(cube);
-      extractedCubes.push(cube);
-    }
-
-    this.animateCubes(extractedCubes);
-    setTimeout(() => {
-      this.cameraController.animateToTree();
-    }, 300);
+    // Just move the camera without creating flying cubes
+    this.cameraController.animateToTree();
   }
 
   animateCubes(cubes) {

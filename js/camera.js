@@ -75,6 +75,47 @@ export class CameraController {
       .start();
   }
 
+  loseFocus() {
+    this.isAnimating = true;
+    this.hoverCameraOffset.set(0, 0, 0);
+
+    // Set camera to lose focus position
+    const loseFocusPosition = new THREE.Vector3(0.022, 2.644, 16.425);
+    const loseFocusTarget = new THREE.Vector3(-0.047, 2.644, 2.403);
+
+    // Animate camera position
+    new TWEEN.Tween(this.camera.position)
+      .to(
+        {
+          x: loseFocusPosition.x,
+          y: loseFocusPosition.y,
+          z: loseFocusPosition.z,
+        },
+        2000
+      )
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .start();
+
+    // Animate controls target
+    new TWEEN.Tween(this.controls.target)
+      .to(
+        {
+          x: loseFocusTarget.x,
+          y: loseFocusTarget.y,
+          z: loseFocusTarget.z,
+        },
+        2000
+      )
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onComplete(() => {
+        this.originalCameraPosition.copy(this.camera.position);
+        this.hoverCameraOffset.set(0, 0, 0);
+        this.isAnimating = false;
+        this.controls.update();
+      })
+      .start();
+  }
+
   saveCameraParameters() {
     const position = this.camera.position;
     const target = this.controls.target;
