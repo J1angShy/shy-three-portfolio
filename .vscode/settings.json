@@ -3,7 +3,7 @@
   "editor.fontSize": 14,
   "editor.tabSize": 2,
   // Terminal font settings
-  "terminal.integrated.fontSize": 16,
+  "terminal.integrated.fontSize": 14,
   // UI font settings (affects tabs, sidebar, etc.)
   "window.zoomLevel": 1,
   // Workbench settings for better visibility
