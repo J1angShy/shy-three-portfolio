@@ -19,11 +19,11 @@ export class Core {
       0.25,
       30
     );
-    this.camera.position.set(0.091, 5.899, 8.437);
+    this.camera.position.set(-0.113, 6.808, 10.069);
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x000000);
-    this.camera.lookAt(0, 1, 0);
+    this.camera.lookAt(-0.077, 2.644, -0.398);
 
     this.setupRenderer();
     this.setupControls();
@@ -44,14 +44,26 @@ export class Core {
   setupControls() {
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.minDistance = 1;
-    this.controls.maxDistance = 10;
+    this.controls.maxDistance = 15;
     this.controls.maxPolarAngle = Math.PI / 2;
     this.controls.enableDamping = true;
+    this.controls.dampingFactor = 0.05;
     this.controls.autoRotateSpeed = 1;
-    this.controls.target.set(0.285, 2.644, -0.456);
-    this.controls.enablePan = false;
-    this.controls.enableRotate = false;
-    this.controls.enableZoom = false;
+    this.controls.target.set(-0.077, 2.644, -0.398);
+
+    // Enable all controls for interaction
+    this.controls.enablePan = true;
+    this.controls.enableRotate = true;
+    this.controls.enableZoom = true;
+
+    // Enhanced panning settings for better left-right movement
+    this.controls.panSpeed = 1.0;
+    this.controls.screenSpacePanning = false; // Allow free panning in 3D space
+    this.controls.keyPanSpeed = 7.0; // Keyboard panning speed
+
+    // Optional: Enable auto-rotation (comment out if you don't want it)
+    // this.controls.autoRotate = true;
+
     this.controls.update();
   }
 

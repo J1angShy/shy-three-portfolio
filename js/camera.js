@@ -16,8 +16,9 @@ export class CameraController {
   setupMouseControls() {
     this.originalCameraPosition.copy(this.camera.position);
 
-    window.addEventListener("mousemove", (event) => this.onMouseMove(event));
-    window.addEventListener("mouseleave", () => this.onMouseLeave());
+    // Comment out mouse hover effects to allow OrbitControls to work
+    // window.addEventListener("mousemove", (event) => this.onMouseMove(event));
+    // window.addEventListener("mouseleave", () => this.onMouseLeave());
   }
 
   onMouseMove(event) {
@@ -38,15 +39,16 @@ export class CameraController {
   }
 
   update() {
-    if (
-      !this.isAnimating &&
-      (this.isHoveringScene || this.hoverCameraOffset.length() > 0.001)
-    ) {
-      this.camera.position
-        .copy(this.originalCameraPosition)
-        .add(this.hoverCameraOffset);
-      this.camera.lookAt(this.controls.target);
-    }
+    // Comment out hover effects to allow OrbitControls to work
+    // if (
+    //   !this.isAnimating &&
+    //   (this.isHoveringScene || this.hoverCameraOffset.length() > 0.001)
+    // ) {
+    //   this.camera.position
+    //     .copy(this.originalCameraPosition)
+    //     .add(this.hoverCameraOffset);
+    //   this.camera.lookAt(this.controls.target);
+    // }
   }
 
   animateToTree() {
