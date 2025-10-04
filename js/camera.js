@@ -55,7 +55,9 @@ export class CameraController {
     this.isAnimating = true;
     this.hoverCameraOffset.set(0, 0, 0);
 
-    const destinationPosition = new THREE.Vector3(3, 4, 2);
+    // Use the specific camera parameters from the console output
+    const destinationPosition = new THREE.Vector3(1.359, 2.644, 2.81);
+    const destinationTarget = new THREE.Vector3(0.407, 2.644, 2.239);
 
     new TWEEN.Tween(this.camera.position)
       .to(
@@ -67,10 +69,24 @@ export class CameraController {
         2000
       )
       .easing(TWEEN.Easing.Quadratic.InOut)
+      .start();
+
+    // Animate controls target to the specific lookAt position
+    new TWEEN.Tween(this.controls.target)
+      .to(
+        {
+          x: destinationTarget.x,
+          y: destinationTarget.y,
+          z: destinationTarget.z,
+        },
+        2000
+      )
+      .easing(TWEEN.Easing.Quadratic.InOut)
       .onComplete(() => {
         this.originalCameraPosition.copy(this.camera.position);
         this.hoverCameraOffset.set(0, 0, 0);
         this.isAnimating = false;
+        this.controls.update();
       })
       .start();
   }
