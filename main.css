@@ -33,20 +33,21 @@ button {
 #logo {
   position: absolute;
   top: 20px;
-  left: 20px;
+  left: 40px;
   z-index: 10;
   pointer-events: auto;
   cursor: pointer;
 }
 
 #logo h1 {
+  font-family: "Bebas Neue", "Impact", sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
   color: #ffffff;
   font-size: 2rem;
-  font-weight: 300;
   margin: 0;
   padding: 0;
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-  letter-spacing: 3px;
   opacity: 0.9;
   transition: opacity 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
 }
@@ -136,7 +137,7 @@ select {
 #moveRightBtn {
   position: absolute;
   bottom: 20px;
-  right: 20px;
+  right: 40px;
   width: 120px;
   z-index: 10;
   pointer-events: auto;
@@ -172,7 +173,7 @@ select {
 #loseFocusBtn {
   position: absolute;
   bottom: 60px;
-  right: 20px;
+  right: 40px;
   width: 120px;
   z-index: 10;
   pointer-events: auto;
@@ -203,4 +204,65 @@ select {
   text-shadow: 0 0 10px #ff00ff;
   transform: translateX(10px) scale(1.1);
   font-weight: bold;
+}
+
+#leftText {
+  position: absolute;
+  top: 50%;
+  left: 40px;
+  transform: translateY(-50%);
+  z-index: 10;
+  color: #ffffff;
+  max-width: 300px;
+  opacity: 0.9;
+  gap: 20px;
+}
+
+#rightText {
+  position: absolute;
+  top: 50%;
+  right: 40px;
+  transform: translateY(-50%);
+  z-index: 10;
+  color: #ffffff;
+  max-width: 300px;
+  opacity: 0.9;
+  text-align: left;
+}
+
+#leftText h2 {
+  font-family: "Bebas Neue", "Impact", sans-serif;
+  font-size: 64px;
+  margin: 0 0 0 40px;
+  font-weight: bold;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+#leftText h1 {
+  font-family: "Great Vibes", "Dancing Script", "Pacifico", "Satisfy", cursive;
+  font-size: 100px;
+  margin: 0 0 65px 0;
+  font-weight: 400;
+  letter-spacing: 5px;
+  font-style: italic;
+  text-shadow: 0 0 15px rgba(209, 222, 222, 0.7);
+}
+
+#leftText p {
+  font-family: Monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0 0 15px 0;
+  color: #ffffff;
+  opacity: 0.8;
+}
+
+#rightText p {
+  font-family: Monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  margin: 0 0 15px 0;
+  color: #ffffff;
+  opacity: 0.8;
 }

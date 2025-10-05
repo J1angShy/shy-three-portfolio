@@ -19,7 +19,7 @@ export class Core {
       0.25,
       30
     );
-    this.camera.position.set(-0.113, 6.808, 10.069);
+    this.camera.position.set(-6.277, 4.338, 8.853);
 
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x000000);

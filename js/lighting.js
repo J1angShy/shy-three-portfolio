@@ -61,7 +61,7 @@ export class Lighting {
 
     //light shooting from the right side of the tree
     const rimLight = new THREE.DirectionalLight(0x404040, 3);
-    rimLight.position.set(5, 3, 5);
+    rimLight.position.set(1, 2, -4);
     this.scene.add(rimLight);
   }
 
@@ -85,7 +85,7 @@ export class Lighting {
     this.scene.add(groundLight);
     this.scene.add(groundLight.target);
   }
-
+  
   setupLightBeam() {
     // Create a dramatic light beam shooting from behind the tree to the ground in front
     // const lightBeam = new THREE.SpotLight(
@@ -116,39 +116,39 @@ export class Lighting {
     // this.scene.add(lightBeam.target);
 
     // Add a secondary beam for more dramatic effect
-    const lightBeam2 = new THREE.SpotLight(
-      0x87ceeb, // Sky blue color
-      15,
-      25,
-      Math.PI / 2,
-      0.2,
-      1.5
-    );
+    // const lightBeam2 = new THREE.SpotLight(
+    //   0x87ceeb, // Sky blue color
+    //   15,
+    //   25,
+    //   Math.PI / 2,
+    //   0.2,
+    //   1.5
+    // );
 
-    lightBeam2.position.set(-2, 3, -6);
-    lightBeam2.target.position.set(1, 0, 2);
-    lightBeam2.castShadow = true;
-    lightBeam2.shadow.mapSize.width = 2048;
-    lightBeam2.shadow.mapSize.height = 2048;
+    // lightBeam2.position.set(-2, 3, -6);
+    // lightBeam2.target.position.set(1, 0, 2);
+    // lightBeam2.castShadow = true;
+    // lightBeam2.shadow.mapSize.width = 2048;
+    // lightBeam2.shadow.mapSize.height = 2048;
 
-    this.scene.add(lightBeam2);
-    this.scene.add(lightBeam2.target);
+    // this.scene.add(lightBeam2);
+    // this.scene.add(lightBeam2.target);
 
-    // Add a third beam for extra drama
-    const lightBeam3 = new THREE.SpotLight(
-      0xff1493, // Deep pink color
-      12,
-      20,
-      Math.PI / 6,
-      0.15,
-      1.8
-    );
+    // // Add a third beam for extra drama
+    // const lightBeam3 = new THREE.SpotLight(
+    //   0xff1493, // Deep pink color
+    //   12,
+    //   20,
+    //   Math.PI / 6,
+    //   0.15,
+    //   1.8
+    // );
 
-    lightBeam3.position.set(2, 5, -7);
-    lightBeam3.target.position.set(-1, 0, 4);
-    lightBeam3.castShadow = true;
+    // lightBeam3.position.set(2, 5, -7);
+    // lightBeam3.target.position.set(-1, 0, 4);
+    // lightBeam3.castShadow = true;
 
-    this.scene.add(lightBeam3);
-    this.scene.add(lightBeam3.target);
+    // this.scene.add(lightBeam3);
+    // this.scene.add(lightBeam3.target);
   }
 }
