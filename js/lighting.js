@@ -59,12 +59,14 @@ export class Lighting {
     accentLight2.position.set(-2, 2, 2);
     this.scene.add(accentLight2);
 
+    //light shooting from the right side of the tree
     const rimLight = new THREE.DirectionalLight(0x404040, 3);
     rimLight.position.set(5, 3, 5);
     this.scene.add(rimLight);
   }
 
   setupAtmosphericLights() {
+    //light in the middle of the tree
     const treeAtmosphereLight = new THREE.PointLight(0x4a90e2, 8, 12);
     treeAtmosphereLight.position.set(0, 3, 0);
     this.scene.add(treeAtmosphereLight);

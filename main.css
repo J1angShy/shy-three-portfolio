@@ -1,5 +1,13 @@
+html,
 body {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
   background-color: #000;
   color: #fff;
   font-family: Monospace;
@@ -33,14 +41,12 @@ button {
 
 #logo h1 {
   color: #ffffff;
-  font-family: "Brush Script MT", "Lucida Handwriting", "Monotype Corsiva",
-    cursive;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 300;
   margin: 0;
   padding: 0;
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   opacity: 0.9;
   transition: opacity 0.3s ease, transform 0.2s ease, text-shadow 0.3s ease;
 }
@@ -58,7 +64,7 @@ button {
 
 #info {
   position: absolute;
-  top: 0px;
+  top: 0;
   width: 100%;
   padding: 10px;
   box-sizing: border-box;
@@ -129,66 +135,72 @@ select {
 
 #moveRightBtn {
   position: absolute;
-  top: 50%;
+  bottom: 20px;
   right: 20px;
-  transform: translateY(-50%);
+  width: 120px;
   z-index: 10;
   pointer-events: auto;
 }
 
 #moveRightBtn button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
+  background: transparent;
+  border: none;
   color: #ffffff;
-  padding: 12px 20px;
+  padding: 6px 0;
   font-family: Monospace;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  text-decoration: none;
+  text-align: left;
+  display: block;
+  width: 100%;
 }
 
 #moveRightBtn button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
+  color: #cccccc;
+  transform: translateX(5px);
 }
 
 #moveRightBtn button:active {
-  transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.3);
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+  transform: translateX(10px) scale(1.1);
+  font-weight: bold;
 }
 
 #loseFocusBtn {
   position: absolute;
-  top: 50%;
-  left: 20px;
-  transform: translateY(-50%);
+  bottom: 60px;
+  right: 20px;
+  width: 120px;
   z-index: 10;
   pointer-events: auto;
 }
 
 #loseFocusBtn button {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
+  background: transparent;
+  border: none;
   color: #ffffff;
-  padding: 12px 20px;
+  padding: 6px 0;
   font-family: Monospace;
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
+  text-decoration: none;
+  text-align: left;
+  display: block;
+  width: 100%;
 }
 
 #loseFocusBtn button:hover {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.5);
-  transform: scale(1.05);
+  color: #cccccc;
+  transform: translateX(5px);
 }
 
 #loseFocusBtn button:active {
-  transform: scale(0.95);
-  background: rgba(255, 255, 255, 0.3);
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
+  transform: translateX(10px) scale(1.1);
+  font-weight: bold;
 }
