@@ -10,6 +10,13 @@ export class Effects {
   }
 
   extractCubesAndMoveCamera() {
+    // Check if contact form is already displayed
+    const existingForm = document.getElementById("contactForm");
+    if (existingForm) {
+      // Form is already displayed, do nothing
+      return;
+    }
+
     // Hide all HTML content gradually
     this.hideHtmlContent();
 
@@ -20,6 +27,19 @@ export class Effects {
     setTimeout(() => {
       this.showHtmlContent();
     }, 2500); // Slightly longer than camera animation duration
+  }
+
+  hideContactForm() {
+    const contactForm = document.getElementById("contactForm");
+    if (contactForm) {
+      contactForm.style.transition = "opacity 0.3s ease-out";
+      contactForm.style.opacity = "0";
+      setTimeout(() => {
+        if (contactForm && contactForm.parentNode) {
+          contactForm.parentNode.removeChild(contactForm);
+        }
+      }, 300);
+    }
   }
 
   hideHtmlContent() {
@@ -57,10 +77,8 @@ export class Effects {
       }
     });
 
-    // Show contact form at the same time with reduced delay
-    setTimeout(() => {
-      this.createContactForm();
-    }, 100); // Reduced delay to 300ms
+    // Show contact form at the same time as other elements
+    this.createContactForm();
   }
 
   createContactForm() {

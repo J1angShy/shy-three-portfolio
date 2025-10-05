@@ -9,6 +9,12 @@ export class UI {
     // Keyboard events
     window.addEventListener("keydown", (event) => this.onKeyDown(event));
 
+    // Logo click event
+    const logo = document.getElementById("logo");
+    if (logo) {
+      logo.addEventListener("click", () => this.onLogoClick());
+    }
+
     // Button events
     const moveRightBtn = document.getElementById("moveRightBtn");
     if (moveRightBtn) {
@@ -28,11 +34,17 @@ export class UI {
     }
   }
 
+  onLogoClick() {
+    this.effects.hideContactForm();
+    this.cameraController.animateToOriginalPosition();
+  }
+
   onMoveRightClick() {
     this.effects.extractCubesAndMoveCamera();
   }
 
   onLoseFocusClick() {
+    this.effects.hideContactForm();
     this.cameraController.loseFocus();
   }
 }

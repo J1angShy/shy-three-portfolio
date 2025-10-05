@@ -91,6 +91,46 @@ export class CameraController {
       .start();
   }
 
+  animateToOriginalPosition() {
+    this.isAnimating = true;
+    this.hoverCameraOffset.set(0, 0, 0);
+
+    // Original camera parameters from core.js
+    const originalPosition = new THREE.Vector3(-0.113, 6.808, 10.069);
+    const originalTarget = new THREE.Vector3(-0.077, 2.644, -0.398);
+
+    new TWEEN.Tween(this.camera.position)
+      .to(
+        {
+          x: originalPosition.x,
+          y: originalPosition.y,
+          z: originalPosition.z,
+        },
+        2000
+      )
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .start();
+
+    // Animate controls target to the original lookAt position
+    new TWEEN.Tween(this.controls.target)
+      .to(
+        {
+          x: originalTarget.x,
+          y: originalTarget.y,
+          z: originalTarget.z,
+        },
+        2000
+      )
+      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onComplete(() => {
+        this.originalCameraPosition.copy(this.camera.position);
+        this.hoverCameraOffset.set(0, 0, 0);
+        this.isAnimating = false;
+        this.controls.update();
+      })
+      .start();
+  }
+
   loseFocus() {
     this.isAnimating = true;
     this.hoverCameraOffset.set(0, 0, 0);
