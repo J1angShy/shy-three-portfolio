@@ -90,6 +90,54 @@ class App {
       TWEEN.update();
       this.postProcessing.render();
     };
+
+    // Hide loading screen and show content
+    this.hideLoadingScreen();
+  }
+
+  hideLoadingScreen() {
+    this.animateProgressBar();
+
+    // Add a small delay to ensure everything is loaded
+    setTimeout(() => {
+      const loadingScreen = document.getElementById("loadingScreen");
+      const body = document.body;
+
+      // Add fade-out class to loading screen
+      loadingScreen.classList.add("fade-out");
+
+      // Add content-loaded class to body to show main content
+      body.classList.add("content-loaded");
+
+      // Remove loading screen from DOM after animation
+      setTimeout(() => {
+        if (loadingScreen && loadingScreen.parentNode) {
+          loadingScreen.parentNode.removeChild(loadingScreen);
+        }
+      }, 1000); // Match CSS transition duration
+    }, 3000); // 3 second delay to show loading progress
+  }
+
+  animateProgressBar() {
+    const progressBar = document.querySelector(".progress-bar");
+    const progressText = document.querySelector(".progress-text");
+
+    let progress = 0;
+    const totalDuration = 2000; // 2 seconds
+    const updateInterval = 50; // Update every 50ms
+    const increment = 100 / (totalDuration / updateInterval);
+
+    const progressInterval = setInterval(() => {
+      progress += increment;
+
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(progressInterval);
+      }
+
+      progressBar.style.width = progress + "%";
+      progressText.textContent = Math.round(progress) + "%";
+    }, updateInterval);
   }
 }
 
