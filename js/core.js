@@ -1,6 +1,6 @@
 // Core Three.js setup and initialization
 import * as THREE from "three/webgpu";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+// import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import TWEEN from "../jsm/libs/tween.module.js";
 
 export class Core {
@@ -42,29 +42,25 @@ export class Core {
   }
 
   setupControls() {
-    this.controls = new OrbitControls(this.camera, this.renderer.domElement);
-    this.controls.minDistance = 1;
-    this.controls.maxDistance = 15;
-    this.controls.maxPolarAngle = Math.PI / 2;
-    this.controls.enableDamping = true;
-    this.controls.dampingFactor = 0.05;
-    this.controls.autoRotateSpeed = 1;
-    this.controls.target.set(-0.077, 2.644, -0.398);
-
+    // this.controls = new OrbitControls(this.camera, this.renderer.domElement);
+    // this.controls.minDistance = 1;
+    // this.controls.maxDistance = 15;
+    // this.controls.maxPolarAngle = Math.PI / 2;
+    // this.controls.enableDamping = true;
+    // this.controls.dampingFactor = 0.05;
+    // this.controls.autoRotateSpeed = 1;
+    // this.controls.target.set(-0.077, 2.644, -0.398);
     // Enable all controls for interaction
-    this.controls.enablePan = true;
-    this.controls.enableRotate = true;
-    this.controls.enableZoom = true;
-
+    // this.controls.enablePan = true;
+    // this.controls.enableRotate = true;
+    // this.controls.enableZoom = true;
     // Enhanced panning settings for better left-right movement
-    this.controls.panSpeed = 1.0;
-    this.controls.screenSpacePanning = false; // Allow free panning in 3D space
-    this.controls.keyPanSpeed = 7.0; // Keyboard panning speed
-
+    // this.controls.panSpeed = 1.0;
+    // this.controls.screenSpacePanning = false; // Allow free panning in 3D space
+    // this.controls.keyPanSpeed = 7.0; // Keyboard panning speed
     // Optional: Enable auto-rotation (comment out if you don't want it)
     // this.controls.autoRotate = true;
-
-    this.controls.update();
+    // this.controls.update();
   }
 
   setupEventListeners() {
@@ -78,7 +74,7 @@ export class Core {
   }
 
   animate() {
-    this.controls.update();
+    // this.controls.update();
     TWEEN.update();
     if (this.postProcessing) {
       this.postProcessing.render();

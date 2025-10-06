@@ -86,7 +86,7 @@ class App {
     // Override core animate to include camera updates and TWEEN
     this.core.animate = () => {
       this.cameraController.update();
-      this.core.controls.update();
+      // this.core.controls.update();
       TWEEN.update();
       this.postProcessing.render();
     };

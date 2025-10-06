@@ -80,7 +80,7 @@ body {
 #logo,
 #leftText,
 #rightText,
-#moveRightBtn,
+#contactMeBtn,
 #loseFocusBtn {
   opacity: 0;
   transition: opacity 1s ease-in;
@@ -90,7 +90,7 @@ body {
 .content-loaded #logo,
 .content-loaded #leftText,
 .content-loaded #rightText,
-.content-loaded #moveRightBtn,
+.content-loaded #contactMeBtn,
 .content-loaded #loseFocusBtn {
   opacity: 1;
 }
@@ -213,7 +213,7 @@ select {
   padding: 10px;
 }
 
-#moveRightBtn {
+#contactMeBtn {
   position: absolute;
   bottom: 20px;
   right: 40px;
@@ -222,7 +222,7 @@ select {
   pointer-events: auto;
 }
 
-#moveRightBtn button {
+#contactMeBtn button {
   background: transparent;
   border: none;
   color: #ffffff;
@@ -237,12 +237,12 @@ select {
   width: 100%;
 }
 
-#moveRightBtn button:hover {
+#contactMeBtn button:hover {
   color: #cccccc;
   transform: translateX(5px);
 }
 
-#moveRightBtn button:active {
+#contactMeBtn button:active {
   color: #00ffff;
   text-shadow: 0 0 10px #00ffff;
   transform: translateX(10px) scale(1.1);

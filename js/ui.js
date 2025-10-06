@@ -16,9 +16,9 @@ export class UI {
     }
 
     // Button events
-    const moveRightBtn = document.getElementById("moveRightBtn");
-    if (moveRightBtn) {
-      moveRightBtn.addEventListener("click", () => this.onMoveRightClick());
+    const contactMeBtn = document.getElementById("contactMeBtn");
+    if (contactMeBtn) {
+      contactMeBtn.addEventListener("click", () => this.onContactMeClick());
     }
 
     // Lose Focus button
@@ -39,7 +39,7 @@ export class UI {
     this.cameraController.animateToOriginalPosition();
   }
 
-  onMoveRightClick() {
+  onContactMeClick() {
     this.effects.extractCubesAndMoveCamera();
   }
 

@@ -46,7 +46,7 @@ export class Effects {
     const htmlElements = [
       document.getElementById("logo"),
       document.getElementById("info"),
-      document.getElementById("moveRightBtn"),
+      document.getElementById("contactMeBtn"),
       document.getElementById("loseFocusBtn"),
     ];
 
@@ -64,7 +64,7 @@ export class Effects {
     const htmlElements = [
       document.getElementById("logo"),
       document.getElementById("info"),
-      document.getElementById("moveRightBtn"),
+      document.getElementById("contactMeBtn"),
       document.getElementById("loseFocusBtn"),
     ];
 

@@ -11,14 +11,15 @@ export class CameraController {
     this.originalCameraPosition = new THREE.Vector3();
     this.hoverCameraOffset = new THREE.Vector3();
     this.isAnimating = false;
+    this.isInContactMeState = false; // Track contactMe state
   }
 
   setupMouseControls() {
     this.originalCameraPosition.copy(this.camera.position);
 
-    // Comment out mouse hover effects to allow OrbitControls to work
-    // window.addEventListener("mousemove", (event) => this.onMouseMove(event));
-    // window.addEventListener("mouseleave", () => this.onMouseLeave());
+    // Mouse hover effects for interactive camera movement
+    window.addEventListener("mousemove", (event) => this.onMouseMove(event));
+    window.addEventListener("mouseleave", () => this.onMouseLeave());
   }
 
   onMouseMove(event) {
@@ -39,25 +40,34 @@ export class CameraController {
   }
 
   update() {
-    // Comment out hover effects to allow OrbitControls to work
-    // if (
-    //   !this.isAnimating &&
-    //   (this.isHoveringScene || this.hoverCameraOffset.length() > 0.001)
-    // ) {
-    //   this.camera.position
-    //     .copy(this.originalCameraPosition)
-    //     .add(this.hoverCameraOffset);
-    //   this.camera.lookAt(this.controls.target);
-    // }
+    // Mouse hover effects for interactive camera movement
+    // Disable hover effects when in contactMe state
+    if (
+      !this.isAnimating &&
+      !this.isInContactMeState &&
+      (this.isHoveringScene || this.hoverCameraOffset.length() > 0.001)
+    ) {
+      this.camera.position
+        .copy(this.originalCameraPosition)
+        .add(this.hoverCameraOffset);
+      // Look at a default target point since we don't have controls.target
+      this.camera.lookAt(-0.077, 2.644, -0.398);
+    }
   }
 
   animateToTree() {
     this.isAnimating = true;
     this.hoverCameraOffset.set(0, 0, 0);
 
-    // Use the specific camera parameters from the console output
+    // Get current camera position and create a smooth lookAt target
+    const currentPosition = this.camera.position.clone();
     const destinationPosition = new THREE.Vector3(1.359, 2.644, 2.81);
     const destinationTarget = new THREE.Vector3(0.407, 2.644, 2.239);
+
+    // Create a smooth lookAt target that starts from current direction
+    const currentLookAt = new THREE.Vector3();
+    this.camera.getWorldDirection(currentLookAt);
+    currentLookAt.multiplyScalar(10).add(this.camera.position);
 
     new TWEEN.Tween(this.camera.position)
       .to(
@@ -69,24 +79,26 @@ export class CameraController {
         2000
       )
       .easing(TWEEN.Easing.Quadratic.InOut)
-      .start();
-
-    // Animate controls target to the specific lookAt position
-    new TWEEN.Tween(this.controls.target)
-      .to(
-        {
-          x: destinationTarget.x,
-          y: destinationTarget.y,
-          z: destinationTarget.z,
-        },
-        2000
-      )
-      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onUpdate(() => {
+        // Smoothly interpolate the lookAt target during animation
+        const progress =
+          this.camera.position.distanceTo(currentPosition) /
+          currentPosition.distanceTo(destinationPosition);
+        const smoothTarget = new THREE.Vector3().lerpVectors(
+          currentLookAt,
+          destinationTarget,
+          progress
+        );
+        this.camera.lookAt(smoothTarget);
+      })
       .onComplete(() => {
         this.originalCameraPosition.copy(this.camera.position);
         this.hoverCameraOffset.set(0, 0, 0);
         this.isAnimating = false;
-        this.controls.update();
+        // Final lookAt to ensure correct orientation
+        this.camera.lookAt(destinationTarget);
+        // Set contactMe state to disable hover effects
+        this.isInContactMeState = true;
       })
       .start();
   }
@@ -94,10 +106,17 @@ export class CameraController {
   animateToOriginalPosition() {
     this.isAnimating = true;
     this.hoverCameraOffset.set(0, 0, 0);
+    this.isInContactMeState = false; // Reset contactMe state
 
-    // Original camera parameters from core.js
-    const originalPosition = new THREE.Vector3(-0.113, 6.808, 10.069);
+    // Get current camera position and create a smooth lookAt target
+    const currentPosition = this.camera.position.clone();
+    const originalPosition = new THREE.Vector3(-6.277, 4.338, 8.853);
     const originalTarget = new THREE.Vector3(-0.077, 2.644, -0.398);
+
+    // Create a smooth lookAt target that starts from current direction
+    const currentLookAt = new THREE.Vector3();
+    this.camera.getWorldDirection(currentLookAt);
+    currentLookAt.multiplyScalar(10).add(this.camera.position);
 
     new TWEEN.Tween(this.camera.position)
       .to(
@@ -109,24 +128,24 @@ export class CameraController {
         2000
       )
       .easing(TWEEN.Easing.Quadratic.InOut)
-      .start();
-
-    // Animate controls target to the original lookAt position
-    new TWEEN.Tween(this.controls.target)
-      .to(
-        {
-          x: originalTarget.x,
-          y: originalTarget.y,
-          z: originalTarget.z,
-        },
-        2000
-      )
-      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onUpdate(() => {
+        // Smoothly interpolate the lookAt target during animation
+        const progress =
+          this.camera.position.distanceTo(currentPosition) /
+          currentPosition.distanceTo(originalPosition);
+        const smoothTarget = new THREE.Vector3().lerpVectors(
+          currentLookAt,
+          originalTarget,
+          progress
+        );
+        this.camera.lookAt(smoothTarget);
+      })
       .onComplete(() => {
         this.originalCameraPosition.copy(this.camera.position);
         this.hoverCameraOffset.set(0, 0, 0);
         this.isAnimating = false;
-        this.controls.update();
+        // Final lookAt to ensure correct orientation
+        this.camera.lookAt(originalTarget);
       })
       .start();
   }
@@ -134,10 +153,17 @@ export class CameraController {
   loseFocus() {
     this.isAnimating = true;
     this.hoverCameraOffset.set(0, 0, 0);
+    this.isInContactMeState = false; // Reset contactMe state
 
-    // Set camera to lose focus position
+    // Get current camera position and create a smooth lookAt target
+    const currentPosition = this.camera.position.clone();
     const loseFocusPosition = new THREE.Vector3(0.022, 2.644, 16.425);
     const loseFocusTarget = new THREE.Vector3(-0.047, 2.644, 2.403);
+
+    // Create a smooth lookAt target that starts from current direction
+    const currentLookAt = new THREE.Vector3();
+    this.camera.getWorldDirection(currentLookAt);
+    currentLookAt.multiplyScalar(10).add(this.camera.position);
 
     // Animate camera position
     new TWEEN.Tween(this.camera.position)
@@ -150,40 +176,40 @@ export class CameraController {
         2000
       )
       .easing(TWEEN.Easing.Quadratic.InOut)
-      .start();
-
-    // Animate controls target
-    new TWEEN.Tween(this.controls.target)
-      .to(
-        {
-          x: loseFocusTarget.x,
-          y: loseFocusTarget.y,
-          z: loseFocusTarget.z,
-        },
-        2000
-      )
-      .easing(TWEEN.Easing.Quadratic.InOut)
+      .onUpdate(() => {
+        // Smoothly interpolate the lookAt target during animation
+        const progress =
+          this.camera.position.distanceTo(currentPosition) /
+          currentPosition.distanceTo(loseFocusPosition);
+        const smoothTarget = new THREE.Vector3().lerpVectors(
+          currentLookAt,
+          loseFocusTarget,
+          progress
+        );
+        this.camera.lookAt(smoothTarget);
+      })
       .onComplete(() => {
         this.originalCameraPosition.copy(this.camera.position);
         this.hoverCameraOffset.set(0, 0, 0);
         this.isAnimating = false;
-        this.controls.update();
+        // Final lookAt to ensure correct orientation
+        this.camera.lookAt(loseFocusTarget);
       })
       .start();
   }
 
   saveCameraParameters() {
     const position = this.camera.position;
-    const target = this.controls.target;
+    // Since we don't have controls.target, we'll use a default target point
+    const target = new THREE.Vector3(-0.077, 2.644, -0.398);
 
     const cameraCode = `// Camera position and lookAt parameters
 camera.position.set(${position.x.toFixed(3)}, ${position.y.toFixed(
       3
     )}, ${position.z.toFixed(3)});
-controls.target.set(${target.x.toFixed(3)}, ${target.y.toFixed(
+camera.lookAt(${target.x.toFixed(3)}, ${target.y.toFixed(
       3
-    )}, ${target.z.toFixed(3)});
-controls.update();`;
+    )}, ${target.z.toFixed(3)});`;
 
     console.log("=== Camera Parameters ===");
     console.log(cameraCode);
