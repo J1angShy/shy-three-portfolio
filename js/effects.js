@@ -1,4 +1,4 @@
-// Visual effects and cube animations
+// Visual effects
 import * as THREE from "three/webgpu";
 import TWEEN from "../jsm/libs/tween.module.js";
 
@@ -42,9 +42,43 @@ export class Effects {
     }
   }
 
+  hideTextContent() {
+    const textElements = [
+      document.getElementById("leftText"),
+      document.getElementById("rightText"),
+      document.getElementById("copyright"),
+    ];
+
+    textElements.forEach((element) => {
+      if (element) {
+        element.style.transition = "opacity 0.5s ease-out";
+        element.style.opacity = "0";
+        element.style.pointerEvents = "none";
+      }
+    });
+  }
+
+  showTextContent() {
+    const textElements = [
+      document.getElementById("leftText"),
+      document.getElementById("rightText"),
+      document.getElementById("copyright"),
+    ];
+
+    textElements.forEach((element) => {
+      if (element) {
+        element.style.transition = "opacity 0.5s ease-in";
+        element.style.opacity = "1";
+        element.style.pointerEvents = "auto";
+      }
+    });
+  }
+
   hideHtmlContent() {
     const htmlElements = [
       document.getElementById("logo"),
+      document.getElementById("leftText"),
+      document.getElementById("rightText"),
       document.getElementById("info"),
       document.getElementById("contactMeBtn"),
       document.getElementById("loseFocusBtn"),
@@ -336,40 +370,6 @@ export class Effects {
       };
       script.onerror = reject;
       document.head.appendChild(script);
-    });
-  }
-
-  animateCubes(cubes) {
-    cubes.forEach((cube, index) => {
-      const targetX = 6 + Math.random() * 2;
-      const targetY = 1 + Math.random() * 3;
-      const targetZ = (Math.random() - 0.5) * 2;
-
-      const scatterX = cube.position.x + (Math.random() - 0.5) * 2;
-      const scatterY = cube.position.y + (Math.random() - 0.5) * 2;
-      const scatterZ = cube.position.z + (Math.random() - 0.5) * 2;
-
-      new TWEEN.Tween(cube.position)
-        .to({ x: scatterX, y: scatterY, z: scatterZ }, 500)
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .start();
-
-      new TWEEN.Tween(cube.rotation)
-        .to({ x: Math.PI * 2, y: Math.PI * 2, z: Math.PI * 2 }, 500)
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .start();
-
-      setTimeout(() => {
-        new TWEEN.Tween(cube.position)
-          .to({ x: targetX, y: targetY, z: targetZ }, 2000)
-          .easing(TWEEN.Easing.Cubic.InOut)
-          .start();
-
-        new TWEEN.Tween(cube.rotation)
-          .to({ x: 0, y: 0, z: 0 }, 2000)
-          .easing(TWEEN.Easing.Cubic.InOut)
-          .start();
-      }, 500);
     });
   }
 }

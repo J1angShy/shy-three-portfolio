@@ -46,19 +46,23 @@ class App {
     this.core.scene.add(treeMesh);
     this.tree.startAnimations();
 
-    // Setup camera controller
-    this.cameraController = new CameraController(
-      this.core.camera,
-      this.core.controls
-    );
-    this.cameraController.setupMouseControls();
-
-    // Setup effects
+    // Setup effects first
     this.effects = new Effects(
       this.core.scene,
       this.core.camera,
-      this.cameraController
+      null // Will be set after camera controller is created
     );
+
+    // Setup camera controller
+    this.cameraController = new CameraController(
+      this.core.camera,
+      this.core.controls,
+      this.effects
+    );
+    this.cameraController.setupMouseControls();
+
+    // Update effects with camera controller reference
+    this.effects.cameraController = this.cameraController;
 
     // Setup post-processing
     this.postProcessing = new PostProcessing(

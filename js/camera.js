@@ -3,9 +3,10 @@ import * as THREE from "three/webgpu";
 import TWEEN from "../jsm/libs/tween.module.js";
 
 export class CameraController {
-  constructor(camera, controls) {
+  constructor(camera, controls, effects) {
     this.camera = camera;
     this.controls = controls;
+    this.effects = effects;
     this.mouse = new THREE.Vector2();
     this.isHoveringScene = false;
     this.originalCameraPosition = new THREE.Vector3();
@@ -58,6 +59,11 @@ export class CameraController {
   animateToTree() {
     this.isAnimating = true;
     this.hoverCameraOffset.set(0, 0, 0);
+    // Remove active class from loseFocusBtn
+    const loseFocusBtn = document.getElementById("loseFocusBtn");
+    if (loseFocusBtn) {
+      loseFocusBtn.classList.remove("active");
+    }
 
     // Get current camera position and create a smooth lookAt target
     const currentPosition = this.camera.position.clone();
@@ -99,6 +105,11 @@ export class CameraController {
         this.camera.lookAt(destinationTarget);
         // Set contactMe state to disable hover effects
         this.isInContactMeState = true;
+        // Add active class to contactMeBtn
+        const contactMeBtn = document.getElementById("contactMeBtn");
+        if (contactMeBtn) {
+          contactMeBtn.classList.add("active");
+        }
       })
       .start();
   }
@@ -107,6 +118,16 @@ export class CameraController {
     this.isAnimating = true;
     this.hoverCameraOffset.set(0, 0, 0);
     this.isInContactMeState = false; // Reset contactMe state
+    // Remove active class from contactMeBtn
+    const contactMeBtn = document.getElementById("contactMeBtn");
+    if (contactMeBtn) {
+      contactMeBtn.classList.remove("active");
+    }
+    // Remove active class from loseFocusBtn
+    const loseFocusBtn = document.getElementById("loseFocusBtn");
+    if (loseFocusBtn) {
+      loseFocusBtn.classList.remove("active");
+    }
 
     // Get current camera position and create a smooth lookAt target
     const currentPosition = this.camera.position.clone();
@@ -146,6 +167,10 @@ export class CameraController {
         this.isAnimating = false;
         // Final lookAt to ensure correct orientation
         this.camera.lookAt(originalTarget);
+        // Show text content back when returning to original position
+        if (this.effects) {
+          this.effects.showTextContent();
+        }
       })
       .start();
   }
@@ -194,6 +219,11 @@ export class CameraController {
         this.isAnimating = false;
         // Final lookAt to ensure correct orientation
         this.camera.lookAt(loseFocusTarget);
+        // Add active class to loseFocusBtn
+        const loseFocusBtn = document.getElementById("loseFocusBtn");
+        if (loseFocusBtn) {
+          loseFocusBtn.classList.add("active");
+        }
       })
       .start();
   }

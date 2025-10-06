@@ -36,6 +36,7 @@ export class UI {
 
   onLogoClick() {
     this.effects.hideContactForm();
+    this.effects.hideTextContent();
     this.cameraController.animateToOriginalPosition();
   }
 
@@ -45,6 +46,7 @@ export class UI {
 
   onLoseFocusClick() {
     this.effects.hideContactForm();
+    this.effects.hideTextContent();
     this.cameraController.loseFocus();
   }
 }

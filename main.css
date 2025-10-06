@@ -249,6 +249,13 @@ select {
   font-weight: bold;
 }
 
+#contactMeBtn.active button {
+  color: #00ffff;
+  text-shadow: 0 0 10px #00ffff;
+  transform: translateX(5px);
+  font-weight: bold;
+}
+
 #loseFocusBtn {
   position: absolute;
   bottom: 60px;
@@ -285,6 +292,13 @@ select {
   font-weight: bold;
 }
 
+#loseFocusBtn.active button {
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
+  transform: translateX(5px);
+  font-weight: bold;
+}
+
 #leftText {
   position: absolute;
   top: 50%;
@@ -294,7 +308,6 @@ select {
   color: #ffffff;
   max-width: 300px;
   opacity: 0.9;
-  gap: 20px;
 }
 
 #rightText {
