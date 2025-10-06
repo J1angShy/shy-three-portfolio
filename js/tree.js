@@ -25,7 +25,7 @@ import {
   vec2,
   vec3,
 } from "three/tsl";
-import TWEEN from "three/addons/libs/tween.module.js";
+import TWEEN from "../jsm/libs/tween.module.js";
 
 export class Tree {
   constructor(scene) {

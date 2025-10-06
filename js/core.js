@@ -1,7 +1,7 @@
 // Core Three.js setup and initialization
 import * as THREE from "three/webgpu";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import TWEEN from "three/addons/libs/tween.module.js";
+import TWEEN from "../jsm/libs/tween.module.js";
 
 export class Core {
   constructor() {

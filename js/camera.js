@@ -1,6 +1,6 @@
 // Camera controls and animations
 import * as THREE from "three/webgpu";
-import TWEEN from "three/addons/libs/tween.module.js";
+import TWEEN from "../jsm/libs/tween.module.js";
 
 export class CameraController {
   constructor(camera, controls) {

@@ -7,7 +7,7 @@ import { CameraController } from "./js/camera.js";
 import { Effects } from "./js/effects.js";
 import { PostProcessing } from "./js/postprocessing.js";
 import { UI } from "./js/ui.js";
-import TWEEN from "three/addons/libs/tween.module.js";
+import TWEEN from "./jsm/libs/tween.module.js";
 
 class App {
   constructor() {

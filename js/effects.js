@@ -1,6 +1,6 @@
 // Visual effects and cube animations
 import * as THREE from "three/webgpu";
-import TWEEN from "three/addons/libs/tween.module.js";
+import TWEEN from "../jsm/libs/tween.module.js";
 
 export class Effects {
   constructor(scene, camera, cameraController) {
